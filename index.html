@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Album Usa Mex Can 26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: rgba(255,255,255,0.08);
+    --accent: #e8ff00;
+    --accent2: #ff6b35;
+    --have: #22c55e;
+    --missing: #ef4444;
+    --swap: #f59e0b;
+    --text: #f0f0f0;
+    --muted: #888;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0.875rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .logo span { color: var(--text); }
+  .sync-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--muted);
+    display: inline-block;
+    transition: background 0.3s;
+  }
+  .sync-dot.online { background: var(--have); }
+  .sync-dot.saving { background: var(--swap); animation: pulse 0.6s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .header-right { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); }
+
+  /* STATS */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat {
+    background: var(--surface);
+    padding: 0.75rem 1rem;
+    text-align: center;
+  }
+  .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 26px; line-height: 1; color: var(--accent); }
+  .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+  /* PROGRESS BAR */
+  .global-progress {
+    height: 3px;
+    background: var(--border);
+  }
+  .global-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.5s ease;
+  }
+
+  /* FILTERS */
+  .toolbar {
+    padding: 0.75rem 1rem;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 57px;
+    z-index: 99;
+  }
+  .filter-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .filter-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  .filter-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+  .search-input {
+    flex: 1;
+    min-width: 120px;
+    max-width: 200px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-input:focus { border-color: rgba(255,255,255,0.3); }
+  .search-input::placeholder { color: var(--muted); }
+
+  /* LEGEND */
+  .legend {
+    padding: 0.5rem 1rem;
+    display: flex;
+    gap: 14px;
+    font-size: 11px;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .leg { display: flex; align-items: center; gap: 5px; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  /* SECTIONS */
+  .sections { padding: 0.5rem 0.75rem; display: flex; flex-direction: column; gap: 6px; }
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .section-card:has(.chips-wrap) { border-color: rgba(255,255,255,0.15); }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.1s;
+  }
+  .section-header:active { background: var(--surface2); }
+  .sec-name { font-size: 14px; font-weight: 500; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sec-badges { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+  .badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-miss { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+  .badge-swap { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+  .badge-ok { background: rgba(34,197,94,0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+  .pbar-wrap { width: 56px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .pbar-fill { height: 100%; border-radius: 2px; transition: width 0.4s; }
+  .pbar-high { background: var(--have); }
+  .pbar-mid { background: var(--swap); }
+  .pbar-low { background: var(--missing); }
+  .pct-text { font-size: 11px; color: var(--muted); min-width: 30px; text-align: right; flex-shrink: 0; }
+  .chevron { font-size: 13px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+  .chevron.open { transform: rotate(180deg); }
+
+  /* CHIPS */
+  .chips-wrap {
+    padding: 8px 14px 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .chip {
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 28px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.1s;
+    border: none;
+    padding: 0 5px;
+    font-family: 'DM Sans', sans-serif;
+    position: relative;
+  }
+  .chip:active { transform: scale(0.9); }
+  .chip-have { background: rgba(34,197,94,0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.25); }
+  .chip-missing { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
+  .chip-swap { background: rgba(245,158,11,0.2); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+  .chip-saving { opacity: 0.5; }
+
+  /* CONTEXT MENU */
+  .ctx-menu {
+    position: fixed;
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 4px;
+    z-index: 999;
+    min-width: 150px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    display: none;
+  }
+  .ctx-menu.show { display: block; }
+  .ctx-item {
+    padding: 9px 12px;
+    font-size: 13px;
+    border-radius: 7px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.1s;
+    white-space: nowrap;
+  }
+  .ctx-item:hover { background: rgba(255,255,255,0.08); }
+  .ctx-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  /* EMPTY */
+  .empty { padding: 2rem; text-align: center; color: var(--muted); font-size: 14px; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 13px;
+    color: var(--text);
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* COPY MODAL */
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 500;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal-bg.show { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.25rem;
+    width: 100%;
+    max-width: 480px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  .modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--accent); margin-bottom: 0.75rem; }
+  .modal-text {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 12px;
+    color: var(--muted);
+    white-space: pre-wrap;
+    line-height: 1.6;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    font-family: monospace;
+  }
+  .modal-btns { display: flex; gap: 8px; }
+  .btn-primary {
+    flex: 1;
+    padding: 10px;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .btn-secondary {
+    padding: 10px 16px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .header-actions { display: flex; gap: 8px; }
+  .icon-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .icon-btn:hover { border-color: rgba(255,255,255,0.25); color: var(--text); }
+
+  /* SETUP SCREEN */
+  .setup-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    text-align: center;
+    gap: 1rem;
+  }
+  .setup-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--accent); line-height: 1; }
+  .setup-sub { font-size: 14px; color: var(--muted); max-width: 320px; line-height: 1.6; }
+  .setup-input {
+    width: 100%;
+    max-width: 380px;
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    text-align: center;
+  }
+  .setup-input:focus { border-color: var(--accent); }
+  .setup-btn {
+    width: 100%;
+    max-width: 380px;
+    padding: 13px;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .setup-note { font-size: 11px; color: var(--muted); max-width: 320px; line-height: 1.6; }
+  .setup-divider { width: 100%; max-width: 380px; border: none; border-top: 1px solid var(--border); }
+  #app { display: none; }
+</style>
+</head>
+<body>
+
+<!-- SETUP SCREEN -->
+<div class="setup-screen" id="setup-screen">
+  <div class="setup-title">Album<br>Usa Mex Can 26</div>
+  <div class="setup-sub">Ingresá tu config de Firebase para sincronizar en tiempo real con tu novia.</div>
+
+  <input class="setup-input" id="fb-api-key" placeholder="apiKey" />
+  <input class="setup-input" id="fb-project-id" placeholder="projectId" />
+  <input class="setup-input" id="fb-db-url" placeholder="databaseURL (https://....firebaseio.com)" />
+  <button class="setup-btn" onclick="initFirebase()">Conectar y abrir álbum</button>
+  <hr class="setup-divider">
+  <div class="setup-note">
+    Necesitás una cuenta gratuita en <strong style="color:var(--text)">firebase.google.com</strong>, crear un proyecto con Realtime Database, y pegar los datos acá.<br><br>
+    El archivo <code style="color:var(--accent)">SETUP.md</code> incluido te explica paso a paso cómo hacerlo en 5 minutos.
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="header">
+    <div>
+      <div class="logo">Album <span>Usa Mex Can 26</span></div>
+    </div>
+    <div class="header-right">
+      <span class="sync-dot" id="sync-dot"></span>
+      <span id="sync-label">conectando...</span>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="showCopyModal()">Exportar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="global-progress"><div class="global-progress-fill" id="global-bar" style="width:0%"></div></div>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-val" id="s-have">0</div><div class="stat-label">Tengo</div></div>
+    <div class="stat"><div class="stat-val" id="s-miss">0</div><div class="stat-label">Faltan</div></div>
+    <div class="stat"><div class="stat-val" id="s-swap">0</div><div class="stat-label">Repetidas</div></div>
+    <div class="stat"><div class="stat-val" id="s-pct">0%</div><div class="stat-label">Progreso</div></div>
+  </div>
+
+  <div class="toolbar">
+    <button class="filter-btn active" onclick="setFilter('all',this)">Todas</button>
+    <button class="filter-btn" onclick="setFilter('missing',this)">Me faltan</button>
+    <button class="filter-btn" onclick="setFilter('swap',this)">Repetidas</button>
+    <button class="filter-btn" onclick="setFilter('complete',this)">Completas</button>
+    <input class="search-input" type="text" placeholder="Buscar..." id="search" oninput="renderList()" />
+  </div>
+
+  <div class="legend">
+    <span class="leg"><span class="leg-dot" style="background:rgba(34,197,94,0.5);border:1px solid rgba(34,197,94,0.4)"></span>La tengo</span>
+    <span class="leg"><span class="leg-dot" style="background:rgba(239,68,68,0.5);border:1px solid rgba(239,68,68,0.4)"></span>Me falta</span>
+    <span class="leg"><span class="leg-dot" style="background:rgba(245,158,11,0.5);border:1px solid rgba(245,158,11,0.4)"></span>Repetida (swap)</span>
+    <span style="margin-left:auto;font-size:11px;color:var(--muted)">Tap = marcar | Hold = opciones</span>
+  </div>
+
+  <div class="sections" id="sections"></div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div class="ctx-menu" id="ctx-menu">
+  <div class="ctx-item" onclick="ctxSetState('have')"><span class="ctx-dot" style="background:rgba(34,197,94,0.5);border:1px solid rgba(34,197,94,0.4)"></span>La tengo</div>
+  <div class="ctx-item" onclick="ctxSetState('missing')"><span class="ctx-dot" style="background:rgba(239,68,68,0.5);border:1px solid rgba(239,68,68,0.4)"></span>Me falta</div>
+  <div class="ctx-item" onclick="ctxSetState('swap')"><span class="ctx-dot" style="background:rgba(245,158,11,0.5);border:1px solid rgba(245,158,11,0.4)"></span>Repetida (swap)</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- EXPORT MODAL -->
+<div class="modal-bg" id="modal-bg" onclick="if(event.target===this)hideModal()">
+  <div class="modal">
+    <div class="modal-title">Exportar lista</div>
+    <div class="modal-text" id="modal-text"></div>
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="hideModal()">Cerrar</button>
+      <button class="btn-primary" onclick="copyExport()">Copiar texto</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+const INITIAL_DATA = {
+  "FWC 🏆":    { total:20, missing:[0,1,2,3,4], swaps:[] },
+  "FWC 🌎":    { total:20, missing:[5,6,7,8], swaps:[] },
+  "FWC 📜":    { total:20, missing:[9,10,11,12,13,14,15,16,17,18,19], swaps:[] },
+  "MEX 🇲🇽":   { total:20, missing:[1,2,4,5,6,10,13,14,15,16,17,19,20], swaps:[] },
+  "RSA 🇿🇦":   { total:20, missing:[1,3,4,5,7,9,10,12,13,14,15,17,18,20], swaps:[11] },
+  "KOR 🇰🇷":   { total:20, missing:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,20], swaps:[] },
+  "CZE 🇨🇿":   { total:20, missing:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "CAN 🇨🇦":   { total:20, missing:[1,2,3,4,6,8,9,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "BIH 🇧🇦":   { total:20, missing:[1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,18,19,20], swaps:[] },
+  "QAT 🇶🇦":   { total:20, missing:[1,2,4,5,6,7,8,9,12,13,14,15,17,18,19,20], swaps:[] },
+  "SUI 🇨🇭":   { total:20, missing:[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "BRA 🇧🇷":   { total:20, missing:[1,3,6,7,8,9,10,11,12,13,17,19,20], swaps:[15] },
+  "MAR 🇲🇦":   { total:20, missing:[1,2,3,4,6,7,8,10,11,12,13,14,15,16,17,19,20], swaps:[] },
+  "HAI 🇭🇹":   { total:20, missing:[1,2,4,5,6,7,8,9,10,11,12,13,14,18], swaps:[] },
+  "SCO 🏴󠁧󠁢󠁳󠁣󠁴󠁿":  { total:20, missing:[1,4,6,7,8,10,11,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "USA 🇺🇸":   { total:20, missing:[1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "PAR 🇵🇾":   { total:20, missing:[1,2,3,4,6,7,10,11,12,13,14,16,17,18,19,20], swaps:[] },
+  "AUS 🇦🇺":   { total:20, missing:[1,2,3,4,5,6,7,8,9,11,13,14,15,16,17,18,19,20], swaps:[] },
+  "TUR 🇹🇷":   { total:20, missing:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20], swaps:[] },
+  "GER 🇩🇪":   { total:20, missing:[5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "CUW 🇨🇼":   { total:20, missing:[1,2,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19,20], swaps:[] },
+  "CIV 🇨🇮":   { total:20, missing:[1,2,3,6,7,8,10,11,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "ECU 🇪🇨":   { total:20, missing:[2,5,6,8,10,11,13,15,17], swaps:[] },
+  "NED 🇳🇱":   { total:20, missing:[1,2,4,5,6,7,8,9,12,13,15,17,19,20], swaps:[10] },
+  "JPN 🇯🇵":   { total:20, missing:[1,2,3,4,6,7,8,9,10,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "SWE 🇸🇪":   { total:20, missing:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "TUN 🇹🇳":   { total:20, missing:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "BEL 🇧🇪":   { total:20, missing:[2,4,5,6,8,10,13,14,17,18], swaps:[] },
+  "EGY 🇪🇬":   { total:20, missing:[1,2,4,5,6,8,9,10,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "IRN 🇮🇷":   { total:20, missing:[2,3,4,5,6,7,8,10,11,12,13,15,16,17,18,19], swaps:[] },
+  "NZL 🇳🇿":   { total:20, missing:[1,2,5,8,9,10,12,13,14,15,17,18,19,20], swaps:[6] },
+  "ESP 🇪🇸":   { total:20, missing:[1,3,4,6,7,10,11,12,13,14,15,16,18,19,20], swaps:[] },
+  "CPV 🇨🇻":   { total:20, missing:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "KSA 🇸🇦":   { total:20, missing:[1,2,4,5,8,9,10,11,12,13,14,17,18,19,20], swaps:[] },
+  "URU 🇺🇾":   { total:20, missing:[1,2,3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,19,20], swaps:[] },
+  "FRA 🇫🇷":   { total:20, missing:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19,20], swaps:[] },
+  "SEN 🇸🇳":   { total:20, missing:[1,2,4,5,6,8,9,10,11,12,13,14,17,18,19,20], swaps:[] },
+  "IRQ 🇮🇶":   { total:20, missing:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20], swaps:[] },
+  "NOR 🇳🇴":   { total:20, missing:[1,2,3,5,6,7,9,10,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "ARG 🇦🇷":   { total:20, missing:[3,4,5,6,7,8,10,11,12,13,15,16,17,18,19,20], swaps:[] },
+  "ALG 🇩🇿":   { total:20, missing:[1,2,3,4,5,6,9,10,12,13,14,15,17,18,19,20], swaps:[] },
+  "AUT 🇦🇹":   { total:20, missing:[1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20], swaps:[] },
+  "JOR 🇯🇴":   { total:20, missing:[1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,17,18,19], swaps:[] },
+  "POR 🇵🇹":   { total:20, missing:[1,4,5,6,7,9,10,11,12,13,14,15,16,17,19,20], swaps:[] },
+  "COD 🇨🇩":   { total:20, missing:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "UZB 🇺🇿":   { total:20, missing:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20], swaps:[] },
+  "COL 🇨🇴":   { total:20, missing:[2,3,4,5,6,7,8,10,11,12,13,14,15,17,18,19], swaps:[] },
+  "ENG 🏴󠁧󠁢󠁥󠁮󠁧󠁿":  { total:20, missing:[3,4,6,8,10,12,13,19,20], swaps:[15] },
+  "CRO 🇭🇷":   { total:20, missing:[2,5,9,10,12,13,14,18], swaps:[] },
+  "GHA 🇬🇭":   { total:20, missing:[1,2,3,4,5,6,7,8,11,12,13,15,16,17,19,20], swaps:[14] },
+  "PAN 🇵🇦":   { total:20, missing:[2,4,5,6,8,9,10,12,13,14,15,17,19,20], swaps:[11] },
+};
+
+let db = null;
+let albumData = {};
+let currentFilter = 'all';
+let openSections = new Set();
+let ctxTarget = null;
+let holdTimer = null;
+let pendingSaves = new Set();
+
+function initFirebase() {
+  const apiKey = document.getElementById('fb-api-key').value.trim();
+  const projectId = document.getElementById('fb-project-id').value.trim();
+  const databaseURL = document.getElementById('fb-db-url').value.trim();
+  if (!apiKey || !projectId || !databaseURL) {
+    showToast('Completá todos los campos');
+    return;
+  }
+  try {
+    const app = firebase.initializeApp({ apiKey, projectId, databaseURL });
+    db = firebase.database(app);
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    startSync();
+  } catch(e) {
+    showToast('Error: ' + e.message);
+  }
+}
+
+function startSync() {
+  const ref = db.ref('album');
+  setSyncState('connecting');
+  ref.once('value', snap => {
+    if (!snap.exists()) {
+      ref.set(INITIAL_DATA).then(() => {
+        albumData = JSON.parse(JSON.stringify(INITIAL_DATA));
+        setSyncState('online');
+        renderAll();
+      });
+    } else {
+      albumData = snap.val();
+      setSyncState('online');
+      renderAll();
+    }
+  });
+  ref.on('value', snap => {
+    if (snap.exists()) {
+      albumData = snap.val();
+      setSyncState('online');
+      renderAll();
+    }
+  });
+}
+
+function setSyncState(state) {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  dot.className = 'sync-dot ' + (state === 'online' ? 'online' : state === 'saving' ? 'saving' : '');
+  lbl.textContent = state === 'online' ? 'sincronizado' : state === 'saving' ? 'guardando...' : 'conectando...';
+}
+
+function saveSection(secName) {
+  if (!db) return;
+  setSyncState('saving');
+  db.ref('album/' + secName.replace(/[.#$/[\]]/g, '_')).set(albumData[secName])
+    .then(() => setSyncState('online'))
+    .catch(() => showToast('Error al guardar'));
+}
+
+function getState(secName, num) {
+  const sec = albumData[secName];
+  if (!sec) return 'have';
+  if (sec.missing && sec.missing.includes(num)) return 'missing';
+  if (sec.swaps && sec.swaps.includes(num)) return 'swap';
+  return 'have';
+}
+
+function toggleChip(secName, num) {
+  const sec = albumData[secName];
+  if (!sec) return;
+  const state = getState(secName, num);
+  let newState;
+  if (state === 'have') newState = 'missing';
+  else if (state === 'missing') newState = 'have';
+  else newState = 'have';
+  applyState(secName, num, newState);
+}
+
+function applyState(secName, num, newState) {
+  const sec = albumData[secName];
+  sec.missing = (sec.missing || []).filter(n => n !== num);
+  sec.swaps = (sec.swaps || []).filter(n => n !== num);
+  if (newState === 'missing') sec.missing.push(num);
+  else if (newState === 'swap') sec.swaps.push(num);
+  saveSection(secName);
+  renderAll();
+}
+
+function renderAll() {
+  renderStats();
+  renderList();
+}
+
+function renderStats() {
+  let have=0, miss=0, swap=0, total=0;
+  Object.values(albumData).forEach(s => {
+    if (!s || !s.total) return;
+    total += s.total;
+    miss += (s.missing||[]).length;
+    swap += (s.swaps||[]).length;
+    have += s.total - (s.missing||[]).length;
+  });
+  document.getElementById('s-have').textContent = have;
+  document.getElementById('s-miss').textContent = miss;
+  document.getElementById('s-swap').textContent = swap;
+  const pct = total > 0 ? Math.round(have/total*100) : 0;
+  document.getElementById('s-pct').textContent = pct + '%';
+  document.getElementById('global-bar').style.width = pct + '%';
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+function renderList() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const el = document.getElementById('sections');
+  let html = '';
+  let count = 0;
+
+  const keys = Object.keys(INITIAL_DATA);
+  keys.forEach(name => {
+    const sec = albumData[name] || INITIAL_DATA[name];
+    const cleanName = name.replace(/[.#$/[\]]/g, '_');
+    const miss = (sec.missing||[]).length;
+    const swapArr = sec.swaps||[];
+    const isComplete = miss === 0;
+
+    if (q && !name.toLowerCase().includes(q)) return;
+    if (currentFilter === 'missing' && miss === 0) return;
+    if (currentFilter === 'swap' && swapArr.length === 0) return;
+    if (currentFilter === 'complete' && !isComplete) return;
+
+    count++;
+    const have = sec.total - miss;
+    const pct = Math.round(have/sec.total*100);
+    const barClass = pct >= 80 ? 'pbar-high' : pct >= 40 ? 'pbar-mid' : 'pbar-low';
+    const isOpen = openSections.has(name);
+
+    let badges = '';
+    if (swapArr.length > 0) badges += `<span class="badge badge-swap">${swapArr.length} rep.</span>`;
+    if (isComplete) badges += `<span class="badge badge-ok">completa</span>`;
+    else badges += `<span class="badge badge-miss">${miss} faltan</span>`;
+
+    let chips = '';
+    if (isOpen) {
+      chips = `<div class="chips-wrap">`;
+      for (let i = 1; i <= sec.total; i++) {
+        const st = getState(name, i);
+        const cls = st === 'have' ? 'chip-have' : st === 'missing' ? 'chip-missing' : 'chip-swap';
+        chips += `<button class="chip ${cls}" 
+          onclick="handleTap('${cleanName}',${i},'${name}')"
+          oncontextmenu="handleCtx(event,'${cleanName}',${i},'${name}')"
+          ontouchstart="startHold('${cleanName}',${i},'${name}',event)"
+          ontouchend="cancelHold()"
+          ontouchmove="cancelHold()"
+        >${i}</button>`;
+      }
+      chips += `</div>`;
+    }
+
+    html += `
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection('${name}')">
+          <span class="sec-name">${name}</span>
+          <div class="sec-badges">${badges}</div>
+          <div class="pbar-wrap"><div class="pbar-fill ${barClass}" style="width:${pct}%"></div></div>
+          <span class="pct-text">${pct}%</span>
+          <span class="chevron ${isOpen?'open'}">&#8964;</span>
+        </div>
+        ${chips}
+      </div>`;
+  });
+
+  el.innerHTML = count ? html : '<div class="empty">No hay resultados</div>';
+}
+
+function toggleSection(name) {
+  if (openSections.has(name)) openSections.delete(name);
+  else openSections.add(name);
+  renderList();
+}
+
+function handleTap(cleanName, num, name) {
+  toggleChipByName(name, num);
+}
+
+function toggleChipByName(name, num) {
+  const state = getState(name, num);
+  const newState = state === 'have' ? 'missing' : 'have';
+  applyState(name, num, newState);
+}
+
+let ctxName = null, ctxNum = null;
+function handleCtx(e, cleanName, num, name) {
+  e.preventDefault();
+  showCtxMenu(e.clientX, e.clientY, name, num);
+}
+
+function startHold(cleanName, num, name, e) {
+  ctxName = name; ctxNum = num;
+  holdTimer = setTimeout(() => {
+    const t = e.touches[0];
+    showCtxMenu(t.clientX, t.clientY, name, num);
+  }, 500);
+}
+function cancelHold() { clearTimeout(holdTimer); }
+
+function showCtxMenu(x, y, name, num) {
+  ctxName = name; ctxNum = num;
+  const m = document.getElementById('ctx-menu');
+  m.style.left = Math.min(x, window.innerWidth - 170) + 'px';
+  m.style.top = Math.min(y, window.innerHeight - 130) + 'px';
+  m.classList.add('show');
+  setTimeout(() => document.addEventListener('click', hideCtx, {once:true}), 10);
+}
+function hideCtx() { document.getElementById('ctx-menu').classList.remove('show'); }
+function ctxSetState(state) {
+  if (ctxName !== null && ctxNum !== null) applyState(ctxName, ctxNum, state);
+  hideCtx();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function showCopyModal() {
+  let text = 'Figuritas App — Usa Mex Can 26\n\nME FALTAN:\n';
+  Object.keys(INITIAL_DATA).forEach(name => {
+    const sec = albumData[name] || INITIAL_DATA[name];
+    if ((sec.missing||[]).length > 0) text += `${name}: ${sec.missing.join(', ')}\n`;
+  });
+  text += '\nTENGO REPETIDAS:\n';
+  Object.keys(INITIAL_DATA).forEach(name => {
+    const sec = albumData[name] || INITIAL_DATA[name];
+    if ((sec.swaps||[]).length > 0) text += `${name}: ${sec.swaps.join(', ')}\n`;
+  });
+  document.getElementById('modal-text').textContent = text;
+  document.getElementById('modal-bg').classList.add('show');
+}
+function hideModal() { document.getElementById('modal-bg').classList.remove('show'); }
+function copyExport() {
+  const text = document.getElementById('modal-text').textContent;
+  navigator.clipboard.writeText(text).then(() => { showToast('Texto copiado'); hideModal(); });
+}
+</script>
+</body>
+</html>
